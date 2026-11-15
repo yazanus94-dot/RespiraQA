@@ -1,0 +1,40 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python caches and build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.coverage.*
+
+# Environment / secrets
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local source dataset and derived data (never commit real patient data)
+data/raw/
+data/interim/
+data/processed/
+
+# Large generated model files (choose deliberately what to publish)
+models/*.joblib
+models/*.pkl
+
+# Generated reports; commit selected final examples only
+reports/robustness/*
+!reports/robustness/.gitkeep
+
+# Notebooks outputs
+.ipynb_checkpoints/

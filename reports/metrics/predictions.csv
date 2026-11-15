@@ -1,0 +1,17 @@
+recording_id,patient_id,cycle_id,true_label,predicted_label,confidence
+201_1b1_Ll_sc_Litt3200,201,201_1b1_Ll_sc_Litt3200_0000,both,wheezes,0.525
+201_1b1_Ll_sc_Litt3200,201,201_1b1_Ll_sc_Litt3200_0001,both,wheezes,0.59
+201_1b1_Ll_sc_Litt3200,201,201_1b1_Ll_sc_Litt3200_0002,both,wheezes,0.57
+201_1b1_Ll_sc_Litt3200,201,201_1b1_Ll_sc_Litt3200_0003,crackles,wheezes,0.495
+201_1b2_Mc_sc_Litt3200,201,201_1b2_Mc_sc_Litt3200_0000,crackles,both,0.62
+201_1b2_Mc_sc_Litt3200,201,201_1b2_Mc_sc_Litt3200_0001,crackles,both,0.54
+201_1b2_Mc_sc_Litt3200,201,201_1b2_Mc_sc_Litt3200_0002,crackles,both,0.61
+201_1b2_Mc_sc_Litt3200,201,201_1b2_Mc_sc_Litt3200_0003,crackles,wheezes,0.47
+202_1b1_Cr_Litt3200,202,202_1b1_Cr_Litt3200_0000,wheezes,wheezes,0.795
+202_1b1_Cr_Litt3200,202,202_1b1_Cr_Litt3200_0001,wheezes,wheezes,0.76
+202_1b1_Cr_Litt3200,202,202_1b1_Cr_Litt3200_0002,wheezes,wheezes,0.74
+202_1b1_Cr_Litt3200,202,202_1b1_Cr_Litt3200_0003,wheezes,wheezes,0.755
+202_1b2_Ls_Litt3200,202,202_1b2_Ls_Litt3200_0000,both,wheezes,0.455
+202_1b2_Ls_Litt3200,202,202_1b2_Ls_Litt3200_0001,both,both,0.485
+202_1b2_Ls_Litt3200,202,202_1b2_Ls_Litt3200_0002,both,both,0.74
+202_1b2_Ls_Litt3200,202,202_1b2_Ls_Litt3200_0003,normal,both,0.64

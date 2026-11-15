@@ -1,0 +1,4 @@
+recording_id=102_1b2_Tc_Litt3200
+patient_id=102
+partition=train
+synthetic=true

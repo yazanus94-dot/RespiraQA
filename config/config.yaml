@@ -1,0 +1,44 @@
+dataset:
+  # Paths to the locally downloaded ICBHI 2017 Respiratory Sound Database.
+  # Adjust these to match the layout of the release you download.
+  root: "data/raw/ICBHI2017"
+  audio_dir: "data/raw/ICBHI2017/audio"
+  annotation_dir: "data/raw/ICBHI2017/annotations"
+  metadata_dir: "data/raw/ICBHI2017/metadata"
+  # Optional: file mapping patient_id -> official partition (train/test),
+  # one pair per line separated by whitespace. Leave empty to skip.
+  split_file: ""
+  manifest_path: "data/interim/manifest.csv"
+  cycles_path: "data/interim/cycles.csv"
+  features_path: "data/processed/features.csv"
+  # Minimum annotated cycle length in seconds; shorter cycles are skipped.
+  min_cycle_seconds: 0.2
+
+processing:
+  target_sample_rate: 16000
+  mono: true
+  filter_enabled: false
+  filter_low_hz: 100
+  filter_high_hz: 2000
+  # one of: none | peak | zscore | minmax
+  normalization: "none"
+
+features:
+  n_mfcc: 13
+  n_fft: 1024
+  hop_length: 512
+
+training:
+  random_seed: 42
+  model_output: "models/respiraqa_baseline.joblib"
+  metadata_output: "models/model_metadata.json"
+  validation_fraction_by_patient: 0.20
+
+evaluation:
+  predictions_path: "reports/metrics/predictions.csv"
+  report_json_path: "reports/metrics/classification_report.json"
+  summary_md_path: "reports/metrics/evaluation_summary.md"
+  confusion_csv_path: "reports/metrics/confusion_matrix.csv"
+
+reports:
+  output_dir: "reports"

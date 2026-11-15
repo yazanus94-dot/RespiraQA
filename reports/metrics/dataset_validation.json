@@ -1,0 +1,87 @@
+{
+  "audio_dir": "C:\\Users\\Souq AL_Bostan\\Projects\\my-first-project\\RespiraQA\\tests\\fixtures\\synthetic\\audio",
+  "annotation_dir": "C:\\Users\\Souq AL_Bostan\\Projects\\my-first-project\\RespiraQA\\tests\\fixtures\\synthetic\\annotations",
+  "n_audio_files": 8,
+  "n_annotation_files": 8,
+  "n_paired_recordings": 8,
+  "n_unpaired_audio": 0,
+  "n_unpaired_annotations": 0,
+  "n_errors": 0,
+  "n_warnings": 0,
+  "errors": [],
+  "warnings": [],
+  "recordings": [
+    {
+      "recording_id": "101_1b1_Al_sc_Litt3200",
+      "annotation_file": "101_1b1_Al_sc_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "101_1b2_Pr_sc_Litt3200",
+      "annotation_file": "101_1b2_Pr_sc_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "102_1b1_Ar_Litt3200",
+      "annotation_file": "102_1b1_Ar_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "102_1b2_Tc_Litt3200",
+      "annotation_file": "102_1b2_Tc_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "201_1b1_Ll_sc_Litt3200",
+      "annotation_file": "201_1b1_Ll_sc_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "201_1b2_Mc_sc_Litt3200",
+      "annotation_file": "201_1b2_Mc_sc_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "202_1b1_Cr_Litt3200",
+      "annotation_file": "202_1b1_Cr_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    },
+    {
+      "recording_id": "202_1b2_Ls_Litt3200",
+      "annotation_file": "202_1b2_Ls_Litt3200.txt",
+      "sample_rate": 8000,
+      "channels": 1,
+      "duration_seconds": 4.0,
+      "num_samples": 32000,
+      "annotation_rows": 4
+    }
+  ]
+}

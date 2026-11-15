@@ -1,0 +1,40 @@
+# Configuration for the committed synthetic demo dataset (no real patient data).
+# Use this to exercise the full pipeline end-to-end without downloading ICBHI 2017.
+dataset:
+  root: "tests/fixtures/synthetic"
+  audio_dir: "tests/fixtures/synthetic/audio"
+  annotation_dir: "tests/fixtures/synthetic/annotations"
+  metadata_dir: "tests/fixtures/synthetic/metadata"
+  split_file: "tests/fixtures/synthetic/split_file.txt"
+  manifest_path: "data/interim/manifest.csv"
+  cycles_path: "data/interim/cycles.csv"
+  features_path: "data/processed/features.csv"
+  min_cycle_seconds: 0.2
+
+processing:
+  target_sample_rate: 8000
+  mono: true
+  filter_enabled: true
+  filter_low_hz: 100
+  filter_high_hz: 2000
+  normalization: "peak"
+
+features:
+  n_mfcc: 13
+  n_fft: 512
+  hop_length: 256
+
+training:
+  random_seed: 42
+  model_output: "models/respiraqa_baseline.joblib"
+  metadata_output: "models/model_metadata.json"
+  validation_fraction_by_patient: 0.20
+
+evaluation:
+  predictions_path: "reports/metrics/predictions.csv"
+  report_json_path: "reports/metrics/classification_report.json"
+  summary_md_path: "reports/metrics/evaluation_summary.md"
+  confusion_csv_path: "reports/metrics/confusion_matrix.csv"
+
+reports:
+  output_dir: "reports"

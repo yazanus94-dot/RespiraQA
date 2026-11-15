@@ -1,0 +1,4 @@
+recording_id=201_1b2_Mc_sc_Litt3200
+patient_id=201
+partition=test
+synthetic=true
