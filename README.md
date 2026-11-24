@@ -120,7 +120,8 @@ Results below come from the committed implementation running on the
 **synthetic demo fixture** (8 synthetic recordings, 4 synthetic patients,
 32 annotated cycles; patient-independent split). They demonstrate that the
 pipeline works end-to-end; they are **not** performance results on real
-respiratory data.
+respiratory data. The unexecuted licensed-data workflow is documented in
+[docs/REAL_DATA_VALIDATION.md](docs/REAL_DATA_VALIDATION.md).
 
 | Metric (synthetic test split) | RandomForest | DummyClassifier |
 |---|---|---|
