@@ -2,9 +2,9 @@
 
 ### Respiratory Sound Classification & AI Quality Assurance
 
-<!-- After the first push, enable: [![Tests](https://github.com/YOUR_USERNAME/RespiraQA/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/RespiraQA/actions) -->
+[![Tests](https://github.com/yazanus94-dot/RespiraQA/actions/workflows/ci.yml/badge.svg)](https://github.com/yazanus94-dot/RespiraQA/actions)
 
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.12%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ## Project Overview
@@ -64,10 +64,10 @@ Matplotlib, Joblib, PyYAML, Pytest, Ruff, and GitHub Actions.
 ## Installation
 
 ```powershell
-git clone https://github.com/YOUR_USERNAME/RespiraQA.git
+git clone https://github.com/yazanus94-dot/RespiraQA.git
 cd RespiraQA
 
-py -3.11 -m venv .venv
+py -3.12 -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
@@ -145,8 +145,10 @@ actual run.
 - **Unit and integration tests:** 57 tests covering validation rules,
   audio loading, preprocessing, feature sanity, model behavior, metric
   math, split-integrity/leakage checks, and a synthetic end-to-end run.
-- **CI:** GitHub Actions runs Ruff + the full test suite on Python 3.11
+- **CI:** GitHub Actions runs Ruff + the full test suite on Python 3.12
   for every push/PR to `main`, using only committed synthetic fixtures.
+  Python 3.12 is required because the pinned NumPy 2.5.4, SciPy 1.18.1 and
+  librosa 1.0.1 declare `requires-python >=3.12`; a 3.11 install fails.
 - **Robustness tests:** controlled corruption experiments (noise at
   documented SNRs, amplitude changes, truncation) reported with baseline
   deltas in `reports/robustness/`.

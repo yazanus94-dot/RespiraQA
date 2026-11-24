@@ -33,5 +33,6 @@ feature sanity, metric math) rather than a percentage goal.
 ## Continuous integration
 
 `.github/workflows/ci.yml` runs Ruff and the full test suite on Python
-3.11 for pushes and pull requests to `main`. CI never needs the real
+3.12 for pushes and pull requests to `main`. Python 3.12 is required by the
+pinned NumPy, SciPy and librosa versions. CI never needs the real
 dataset: all checks use the committed synthetic fixtures.

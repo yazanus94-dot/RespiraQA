@@ -7,7 +7,7 @@ name = "respiraqa"
 version = "0.1.0"
 description = "Respiratory sound classification and AI quality assurance research project"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Yazan Aljabari" }]
 dependencies = [
@@ -35,7 +35,7 @@ addopts = "-ra"
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 src = ["src", "tests", "scripts"]
 extend-exclude = ["notebooks"]
 
