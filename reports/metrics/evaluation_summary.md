@@ -1,5 +1,8 @@
 # Evaluation Summary (test split)
 
+> **SYNTHETIC DEMO RESULTS - NOT CLINICAL VALIDATION**
+> Dataset: `tests\fixtures\synthetic`
+
 - Cycles evaluated: **16**
 - Accuracy: **0.3750**
 - Macro F1: **0.2262**

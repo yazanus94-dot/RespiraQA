@@ -22,7 +22,7 @@ from respiraqa.evaluation.metrics import compute_metrics
 from respiraqa.features.acoustic_features import feature_names
 from respiraqa.models.baseline import build_model, load_model, train_model
 from respiraqa.models.prediction import predict_with_confidence
-from respiraqa.utils.config import load_config, resolve_config_paths
+from respiraqa.utils.config import dataset_provenance, load_config, resolve_config_paths
 from respiraqa.utils.reproducibility import write_json
 
 matplotlib.use("Agg")
@@ -109,6 +109,7 @@ def main(argv: list[str] | None = None) -> int:
         "model_macro_f1": metrics["macro_f1"],
     }
 
+    metrics["data_provenance"] = dataset_provenance(config)
     write_json(metrics, evaluation_cfg.get("report_json_path", str(reports_dir / "classification_report.json")))
 
     classes = list(metrics["classes"])
@@ -172,6 +173,13 @@ def render_summary_md(metrics: dict, split: str, config: dict) -> str:
     """Render the Markdown evaluation summary."""
     event = metrics["event_metrics"]
     dummy = metrics.get("dummy_comparison", {})
+    provenance = dataset_provenance(config)
+    warning = (
+        "> **SYNTHETIC DEMO RESULTS - NOT CLINICAL VALIDATION**\n"
+        f"> Dataset: `{provenance['dataset_root']}`\n"
+        if provenance["synthetic"]
+        else f"> **REAL-DATA RESULTS** - Dataset: `{provenance['dataset_root']}`\n"
+    )
     per_class_lines = "\n".join(
         f"| {name} | {values['precision']:.3f} | {values['recall']:.3f} | "
         f"{values['f1_score']:.3f} | {values['support']} |"
@@ -180,6 +188,8 @@ def render_summary_md(metrics: dict, split: str, config: dict) -> str:
     return "\n".join(
         [
             f"# Evaluation Summary ({split} split)",
+            "",
+            warning.rstrip(),
             "",
             f"- Cycles evaluated: **{metrics['n_cycles']}**",
             f"- Accuracy: **{metrics['accuracy']:.4f}**",

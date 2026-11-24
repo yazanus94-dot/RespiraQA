@@ -51,7 +51,15 @@ def compute_metrics(
     classes = list(SUPPORTED_CLASSES)
 
     accuracy = float(accuracy_score(true_labels, predicted_labels))
-    macro_f1 = float(f1_score(true_labels, predicted_labels, average="macro", zero_division=0))
+    macro_f1 = float(
+        f1_score(
+            true_labels,
+            predicted_labels,
+            labels=classes,
+            average="macro",
+            zero_division=0,
+        )
+    )
     balanced_accuracy = float(balanced_accuracy_score(true_labels, predicted_labels))
 
     precision, recall, f1, support = precision_recall_fscore_support(        true_labels, predicted_labels, labels=classes, zero_division=0
@@ -100,7 +108,15 @@ def accuracy_macro_f1(
     if len(true_labels) != len(predicted_labels) or not true_labels:
         raise ValueError("Metric inputs are empty or lengths differ")
     accuracy = float(accuracy_score(true_labels, predicted_labels))
-    macro_f1 = float(f1_score(true_labels, predicted_labels, average="macro", zero_division=0))
+    macro_f1 = float(
+        f1_score(
+            true_labels,
+            predicted_labels,
+            labels=list(SUPPORTED_CLASSES),
+            average="macro",
+            zero_division=0,
+        )
+    )
     return accuracy, macro_f1
 
 

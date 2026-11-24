@@ -67,6 +67,21 @@ def test_invalid_target_sample_rate_raises(make_audio):
         load_audio(path, target_sample_rate=0)
 
 
+def test_stereo_resampling_preserves_two_channels(tmp_path):
+    """mono=False with resampling must return a 2-D array, never crash."""
+    path = tmp_path / "stereo.wav"
+    signal = np.zeros((8000, 2), dtype=np.float32)
+    signal[:, 0] = 0.1
+    signal[:, 1] = -0.1
+    sf.write(path, signal, 8000)
+    audio, info = load_audio(path, mono=False, target_sample_rate=4000)
+    assert audio.ndim == 2
+    assert audio.shape[1] == 2
+    assert info["channels"] == 2
+    assert info["sample_rate"] == 4000
+    assert len(audio) == pytest.approx(4000, rel=1e-2)
+
+
 def test_sample_rate_label_not_faked(make_audio):
     """Resampling must actually change sample count, not just the label."""
     path = make_audio("check_len", class_label="normal", sample_rate=8000, seconds=1.0)

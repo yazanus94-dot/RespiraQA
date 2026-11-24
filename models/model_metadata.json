@@ -64,6 +64,11 @@
     ],
     "patient_independent": true
   },
+  "data_provenance": {
+    "dataset_root": "tests\\fixtures\\synthetic",
+    "synthetic": true,
+    "label": "SYNTHETIC DEMO - not clinical validation"
+  },
   "preprocessing": {
     "target_sample_rate": 8000,
     "mono": true,

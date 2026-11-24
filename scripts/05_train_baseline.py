@@ -17,7 +17,7 @@ from sklearn.model_selection import StratifiedGroupKFold
 from respiraqa.features.acoustic_features import feature_names
 from respiraqa.models.baseline import build_model, save_model, train_model
 from respiraqa.models.prediction import predict_with_confidence
-from respiraqa.utils.config import load_config, resolve_config_paths
+from respiraqa.utils.config import dataset_provenance, load_config, resolve_config_paths
 from respiraqa.utils.reproducibility import get_environment_versions, set_random_seed
 
 
@@ -142,6 +142,7 @@ def main(argv: list[str] | None = None) -> int:
             "official_partitions_used_for_training": ["train"],
             "patient_independent": True,
         },
+        "data_provenance": dataset_provenance(config),
         "preprocessing": config.get("processing", {}),
         "features_config": config.get("features", {}),
         "results": results,

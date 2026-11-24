@@ -92,22 +92,23 @@ def _resample(audio: np.ndarray, source_rate: int, target_rate: int) -> np.ndarr
     """Resample using librosa's high-quality resampler.
 
     Args:
-        audio: 1-D floating-point signal.
+        audio: 1-D mono signal or 2-D ``(samples, channels)`` array.
         source_rate: Native sample rate (Hz).
         target_rate: Desired sample rate (Hz).
 
     Returns:
-        Resampled 1-D float64 signal.
+        Resampled float64 signal with the same number of channels.
 
     Raises:
-        ValueError: If rates are not positive integers.
+        ValueError: If rates are not positive or the array is not 1-D/2-D.
     """
     if source_rate <= 0 or target_rate <= 0:
         raise ValueError("Sample rates must be positive")
     import librosa
 
-    if audio.ndim != 1:
-        raise ValueError("Resampling expects a 1-D mono signal")
+    array = np.asarray(audio, dtype=np.float64)
+    if array.ndim not in (1, 2):
+        raise ValueError("Resampling expects a 1-D or 2-D (samples, channels) signal")
     return librosa.resample(
-        np.asarray(audio, dtype=np.float64), orig_sr=source_rate, target_sr=target_rate
+        array, orig_sr=source_rate, target_sr=target_rate, axis=0
     )

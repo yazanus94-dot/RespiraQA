@@ -56,6 +56,28 @@ def resolve_path(config_path: str | Path, value: str | Path) -> Path:
     return repo_root(config_path) / candidate
 
 
+def dataset_provenance(config: dict[str, Any]) -> dict[str, Any]:
+    """Return explicit synthetic/real provenance for the configured dataset.
+
+    Results generated from the committed fixtures must never be mistaken for
+    real-data or clinical validation, so every report records this field.
+    """
+    root_value = str(config.get("dataset", {}).get("root", ""))
+    try:
+        project_root = Path(__file__).resolve().parents[3]
+        root = str(Path(root_value).resolve().relative_to(project_root))
+    except (ValueError, OSError):
+        root = root_value
+    synthetic = "synthetic" in root.casefold()
+    return {
+        "dataset_root": root,
+        "synthetic": synthetic,
+        "label": (
+            "SYNTHETIC DEMO - not clinical validation" if synthetic else "REAL DATA - verify licence and cohort before use"
+        ),
+    }
+
+
 def resolve_config_paths(config: dict[str, Any], config_path: str | Path) -> dict[str, Any]:
     """Return a copy of the config with known path entries made absolute."""
     resolved = dict(config)
