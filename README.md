@@ -143,9 +143,10 @@ actual run.
 
 ## Software Quality Assurance
 
-- **Unit and integration tests:** 57 tests covering validation rules,
-  audio loading, preprocessing, feature sanity, model behavior, metric
-  math, split-integrity/leakage checks, and a synthetic end-to-end run.
+- **Unit and integration tests:** 69 tests (latest verified local run) covering validation
+  rules, audio loading and stereo resampling, preprocessing, feature sanity, model behavior,
+  metric math, explicit/provenance validation, split-integrity/leakage checks, and a synthetic
+  end-to-end run. Test counts are taken from actual pytest output, not memory.
 - **CI:** GitHub Actions runs Ruff + the full test suite on Python 3.12
   for every push/PR to `main`, using only committed synthetic fixtures.
   Python 3.12 is required because the pinned NumPy 2.5.4, SciPy 1.18.1 and
