@@ -42,7 +42,10 @@ def test_empty_audio_file_raises(tmp_path):
 def test_multichannel_input_averaged_to_mono(tmp_path):
     path = tmp_path / "stereo.wav"
     audio = np.column_stack(
-        [np.sin(2 * np.pi * 220 * np.linspace(0, 1, 8000)), -np.sin(2 * np.pi * 220 * np.linspace(0, 1, 8000))]
+        [
+            np.sin(2 * np.pi * 220 * np.linspace(0, 1, 8000)),
+            -np.sin(2 * np.pi * 220 * np.linspace(0, 1, 8000)),
+        ]
     )
     sf.write(path, audio, 8000, subtype="PCM_16")
     signal, info = load_audio(path, mono=True)

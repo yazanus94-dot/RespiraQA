@@ -21,9 +21,7 @@ def compute_confusion_matrix(
     return confusion_matrix(true_labels, predicted_labels, labels=classes)
 
 
-def confusion_matrix_to_records(
-    matrix: np.ndarray, classes: list[str]
-) -> list[dict[str, Any]]:
+def confusion_matrix_to_records(matrix: np.ndarray, classes: list[str]) -> list[dict[str, Any]]:
     """Convert a confusion matrix to row dicts for CSV export."""
     records: list[dict[str, Any]] = []
     for i, true_class in enumerate(classes):

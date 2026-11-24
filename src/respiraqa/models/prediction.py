@@ -41,8 +41,7 @@ def predict_with_confidence(
             probabilities = np.asarray(model.predict_proba(matrix))
             class_index = {name: i for i, name in enumerate(model.classes_)}
             confidence = [
-                float(probabilities[row, class_index[label]])
-                for row, label in enumerate(labels)
+                float(probabilities[row, class_index[label]]) for row, label in enumerate(labels)
             ]
         except (AttributeError, KeyError, IndexError, ValueError):
             confidence = None

@@ -54,7 +54,9 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    config = resolve_config_paths(load_config(args.config), args.config)
+    raw_config = load_config(args.config)
+    provenance = dataset_provenance(raw_config, args.config, require_real_evidence=True)
+    config = resolve_config_paths(raw_config, args.config)
     dataset = config["dataset"]
     training = config.get("training", {})
     evaluation_cfg = config.get("evaluation", {})
@@ -94,9 +96,7 @@ def main(argv: list[str] | None = None) -> int:
     metrics = compute_metrics(
         predictions["true_label"].tolist(),
         predictions["predicted_label"].tolist(),
-        predictions["confidence"].tolist()
-        if predictions["confidence"].notna().any()
-        else None,
+        predictions["confidence"].tolist() if predictions["confidence"].notna().any() else None,
     )
     dummy_metrics = compute_metrics(
         dummy_predictions["true_label"].tolist(),
@@ -109,8 +109,11 @@ def main(argv: list[str] | None = None) -> int:
         "model_macro_f1": metrics["macro_f1"],
     }
 
-    metrics["data_provenance"] = dataset_provenance(config)
-    write_json(metrics, evaluation_cfg.get("report_json_path", str(reports_dir / "classification_report.json")))
+    metrics["data_provenance"] = provenance
+    write_json(
+        metrics,
+        evaluation_cfg.get("report_json_path", str(reports_dir / "classification_report.json")),
+    )
 
     classes = list(metrics["classes"])
     matrix = compute_confusion_matrix(
@@ -157,28 +160,31 @@ def main(argv: list[str] | None = None) -> int:
     figure.savefig(figures_dir / "performance_comparison.png", dpi=150)
     plt.close(figure)
 
-    summary_md = render_summary_md(metrics, args.split, config)
+    summary_md = render_summary_md(metrics, args.split, provenance)
     summary_path = evaluation_cfg.get("summary_md_path", str(reports_dir / "evaluation_summary.md"))
     Path(summary_path).parent.mkdir(parents=True, exist_ok=True)
     Path(summary_path).write_text(summary_md, encoding="utf-8")
 
-    print(f"Evaluation on '{args.split}' split: accuracy {metrics['accuracy']:.4f}, "
-          f"macro F1 {metrics['macro_f1']:.4f}")
+    print(
+        f"Evaluation on '{args.split}' split: accuracy {metrics['accuracy']:.4f}, "
+        f"macro F1 {metrics['macro_f1']:.4f}"
+    )
     print(f"Predictions written to {predictions_path}")
     print(f"Summary written to {summary_path}")
     return 0
 
 
-def render_summary_md(metrics: dict, split: str, config: dict) -> str:
-    """Render the Markdown evaluation summary."""
+def render_summary_md(metrics: dict, split: str, provenance: dict) -> str:
+    """Render the Markdown evaluation summary with explicit provenance."""
     event = metrics["event_metrics"]
     dummy = metrics.get("dummy_comparison", {})
-    provenance = dataset_provenance(config)
     warning = (
         "> **SYNTHETIC DEMO RESULTS - NOT CLINICAL VALIDATION**\n"
         f"> Dataset: `{provenance['dataset_root']}`\n"
         if provenance["synthetic"]
-        else f"> **REAL-DATA RESULTS** - Dataset: `{provenance['dataset_root']}`\n"
+        else f"> **REAL RESEARCH DATA RESULTS - NOT CLINICAL VALIDATION**\n"
+        f"> Dataset: `{provenance['dataset_id']}` "
+        f"(source: {provenance['source']}, version: {provenance['version']})\n"
     )
     per_class_lines = "\n".join(
         f"| {name} | {values['precision']:.3f} | {values['recall']:.3f} | "

@@ -107,8 +107,9 @@ def build_synthetic_dataset(
         directory.mkdir(parents=True, exist_ok=True)
 
     for index, (recording_id, patient_id, class_label, partition) in enumerate(RECORDING_PLAN):
-        audio = make_recording(class_label, seed=1000 + index, sample_rate=sample_rate,
-                               seconds=seconds)
+        audio = make_recording(
+            class_label, seed=1000 + index, sample_rate=sample_rate, seconds=seconds
+        )
         sf.write(
             audio_dir / f"{recording_id}.wav",
             audio,
@@ -131,7 +132,9 @@ def build_synthetic_dataset(
                 rows.append(f"{start:.3f}\t{end:.3f}\t0\t1")
             else:
                 rows.append(f"{start:.3f}\t{end:.3f}\t1\t1")
-        (annotation_dir / f"{recording_id}.txt").write_text("\n".join(rows) + "\n", encoding="utf-8")
+        (annotation_dir / f"{recording_id}.txt").write_text(
+            "\n".join(rows) + "\n", encoding="utf-8"
+        )
 
         (metadata_dir / f"{recording_id}.txt").write_text(
             f"recording_id={recording_id}\npatient_id={patient_id}\n"

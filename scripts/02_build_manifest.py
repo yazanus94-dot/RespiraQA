@@ -42,7 +42,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Manifest written to {manifest_path} ({len(manifest)} recordings)")
     for issue in issues:
         print(f"[{issue['severity']}] {issue['code']}: {issue['message']}")
-    write_json({"issues": issues, "n_recordings": len(manifest)}, str(manifest_path) + ".report.json")
+    write_json(
+        {"issues": issues, "n_recordings": len(manifest)}, str(manifest_path) + ".report.json"
+    )
 
     unassigned = (
         int((manifest["official_partition"] == "unassigned").sum()) if not manifest.empty else 0

@@ -139,9 +139,7 @@ def save_model(
     joblib.dump(model, model_file)
 
     payload: dict[str, Any] = {
-        "feature_names": getattr(model, "feature_names_in_", None) or metadata.get(
-            "feature_names"
-        )
+        "feature_names": getattr(model, "feature_names_in_", None) or metadata.get("feature_names")
         if metadata
         else None,
         "classes": list(SUPPORTED_CLASSES),

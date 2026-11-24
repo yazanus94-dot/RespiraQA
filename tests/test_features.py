@@ -37,9 +37,7 @@ def test_features_reproducible_for_same_input():
     first = extract_features(cycle, 8000)
     second = extract_features(cycle.copy(), 8000)
     assert first.keys() == second.keys()
-    assert all(
-        first[name] == pytest.approx(second[name], rel=1e-9) for name in first
-    )
+    assert all(first[name] == pytest.approx(second[name], rel=1e-9) for name in first)
 
 
 def test_short_input_rejected():

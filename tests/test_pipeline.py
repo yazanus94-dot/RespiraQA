@@ -73,8 +73,10 @@ def test_cycles_table_valid(synthetic_dataset):
     assert cycles["class_label"].isin(["normal", "crackles", "wheezes", "both"]).all()
     assert cycles["cycle_id"].is_unique
     within = cycles.apply(
-        lambda row: row["end_time"] <= manifest.set_index("recording_id")
-        .loc[row["recording_id"], "duration_seconds"],
+        lambda row: (
+            row["end_time"]
+            <= manifest.set_index("recording_id").loc[row["recording_id"], "duration_seconds"]
+        ),
         axis=1,
     )
     assert within.all()
@@ -87,9 +89,7 @@ def test_missing_annotation_file_is_reported(tmp_path):
     (audio / "101_normal.wav").write_bytes(b"\x00" * 16)
     manifest, issues = build_manifest(audio, audio, None)
     assert manifest.empty
-    assert any(
-        issue["code"] == "audio_without_annotations" for issue in issues
-    )
+    assert any(issue["code"] == "audio_without_annotations" for issue in issues)
 
 
 def test_end_to_end_pipeline_on_synthetic_data(synthetic_dataset):
@@ -105,8 +105,10 @@ def test_end_to_end_pipeline_on_synthetic_data(synthetic_dataset):
     assert not features.empty
     assert not any(issue["severity"] == "error" for issue in issues)
     names = feature_names()
-    assert list(features.columns) == ["recording_id", "patient_id", "cycle_id",
-                                      "class_label", "official_partition"] + names
+    assert (
+        list(features.columns)
+        == ["recording_id", "patient_id", "cycle_id", "class_label", "official_partition"] + names
+    )
     numeric = features[names].to_numpy(dtype=float)
     assert np.isfinite(numeric).all()
 

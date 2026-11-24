@@ -62,7 +62,8 @@ def compute_metrics(
     )
     balanced_accuracy = float(balanced_accuracy_score(true_labels, predicted_labels))
 
-    precision, recall, f1, support = precision_recall_fscore_support(        true_labels, predicted_labels, labels=classes, zero_division=0
+    precision, recall, f1, support = precision_recall_fscore_support(
+        true_labels, predicted_labels, labels=classes, zero_division=0
     )
     per_class = {
         name: {
@@ -74,9 +75,7 @@ def compute_metrics(
         for i, name in enumerate(classes)
     }
 
-    class_distribution = {
-        name: int(list(true_labels).count(name)) for name in SUPPORTED_CLASSES
-    }
+    class_distribution = {name: int(list(true_labels).count(name)) for name in SUPPORTED_CLASSES}
 
     event_metrics = compute_event_metrics(true_labels, predicted_labels)
 

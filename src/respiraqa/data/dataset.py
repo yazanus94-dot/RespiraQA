@@ -172,8 +172,8 @@ def build_manifest(
         :data:`MANIFEST_COLUMNS`; ``issues`` records unmatched files and
         recordings whose audio could not be opened.
     """
-    paired_audio, paired_annotations, unpaired_audio, unpaired_annotations = (
-        discover_dataset_files(audio_dir, annotation_dir)
+    paired_audio, paired_annotations, unpaired_audio, unpaired_annotations = discover_dataset_files(
+        audio_dir, annotation_dir
     )
 
     splits = read_split_file(split_file) if split_file else {}

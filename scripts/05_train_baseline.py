@@ -38,16 +38,19 @@ def split_train_validation(
     groups = features["patient_id"].to_numpy()
     unique_groups = len(set(groups))
     n_splits = min(5, unique_groups)
-    if n_splits < 2:
-        # Too few patients for a grouped split; train on all rows.
-        return list(range(len(features))), []
+    if n_splits < 2 or len(set(labels)) < 2:
+        # Never silently report training performance as validation performance.
+        raise ValueError(
+            "patient-independent validation requires at least two patients and "
+            f"two classes; got {unique_groups} patient(s) and {len(set(labels))} class(es)"
+        )
     splitter = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     validation_indices: list[int] = []
     train_indices: list[int] = []
     # Take the first fold as validation so labels are represented.
     folds = list(splitter.split(np.zeros(len(labels)), labels, groups))
     if not folds:
-        return list(range(len(features))), []
+        raise ValueError("StratifiedGroupKFold produced no folds; cannot validate")
     validation_indices = list(folds[0][1])
     train_indices = list(folds[0][0])
     return train_indices, validation_indices
@@ -58,14 +61,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--config", required=True, help="Path to config/config.yaml")
     args = parser.parse_args(argv)
 
-    config = resolve_config_paths(load_config(args.config), args.config)
+    raw_config = load_config(args.config)
+    provenance = dataset_provenance(raw_config, args.config, require_real_evidence=True)
+    config = resolve_config_paths(raw_config, args.config)
     dataset = config["dataset"]
     training = config.get("training", {})
     features_path = dataset["features_path"]
     model_output = training.get("model_output", "models/respiraqa_baseline.joblib")
-    metadata_output = training.get(
-        "metadata_output", "models/model_metadata.json"
-    )
+    metadata_output = training.get("metadata_output", "models/model_metadata.json")
     seed = int(training.get("random_seed", 42))
     validation_fraction = float(training.get("validation_fraction_by_patient", 0.2))
 
@@ -75,8 +78,9 @@ def main(argv: list[str] | None = None) -> int:
     test_rows = features[features["official_partition"] == "test"]
 
     if train_rows.empty:
-        print("No training rows found (official_partition == 'train'). "
-              "Check the dataset split file.")
+        print(
+            "No training rows found (official_partition == 'train'). Check the dataset split file."
+        )
         return 2
     if test_rows.empty:
         print("Warning: no official test rows found; evaluation will be limited.")
@@ -93,29 +97,29 @@ def main(argv: list[str] | None = None) -> int:
         model = build_model(model_type, random_state=seed)
         train_model(model, train_fit[names], train_fit["class_label"], names)
         predictions = predict_with_confidence(model, train_fit[names], names)
-        train_accuracy = float(np.mean(
-            [
-                a == b
-                for a, b in zip(
-                    train_fit["class_label"], predictions["labels"], strict=True
-                )
-            ]
-        ))
-        validation_accuracy = None
-        if not validation_rows.empty:
-            validation_predictions = predict_with_confidence(
-                model, validation_rows[names], names
-            )
-            validation_accuracy = float(np.mean(
+        train_accuracy = float(
+            np.mean(
                 [
                     a == b
-                for a, b in zip(
-                    validation_rows["class_label"],
-                    validation_predictions["labels"],
-                    strict=True,
-                )
+                    for a, b in zip(train_fit["class_label"], predictions["labels"], strict=True)
                 ]
-            ))
+            )
+        )
+        validation_accuracy = None
+        if not validation_rows.empty:
+            validation_predictions = predict_with_confidence(model, validation_rows[names], names)
+            validation_accuracy = float(
+                np.mean(
+                    [
+                        a == b
+                        for a, b in zip(
+                            validation_rows["class_label"],
+                            validation_predictions["labels"],
+                            strict=True,
+                        )
+                    ]
+                )
+            )
         results[model_type] = {
             "train_accuracy": train_accuracy,
             "validation_accuracy": validation_accuracy,
@@ -124,30 +128,39 @@ def main(argv: list[str] | None = None) -> int:
         }
         print(
             f"{model_type}: train accuracy {train_accuracy:.4f}"
-            + (f", validation accuracy {validation_accuracy:.4f}" if validation_accuracy is not None else "")
+            + (
+                f", validation accuracy {validation_accuracy:.4f}"
+                if validation_accuracy is not None
+                else ""
+            )
         )
 
     # Persist the random forest as the primary baseline artifact.
     primary = build_model("random_forest", random_state=seed)
     train_model(primary, train_fit[names], train_fit["class_label"], names)
-    save_model(primary, model_output, metadata_output, metadata={
-        "model_type": "random_forest",
-        "feature_names": names,
-        "classes": ["normal", "crackles", "wheezes", "both"],
-        "random_seed": seed,
-        "training": {
-            "n_train_cycles": len(train_fit),
-            "n_validation_cycles": len(validation_rows),
-            "validation_fraction_by_patient": validation_fraction,
-            "official_partitions_used_for_training": ["train"],
-            "patient_independent": True,
+    save_model(
+        primary,
+        model_output,
+        metadata_output,
+        metadata={
+            "model_type": "random_forest",
+            "feature_names": names,
+            "classes": ["normal", "crackles", "wheezes", "both"],
+            "random_seed": seed,
+            "training": {
+                "n_train_cycles": len(train_fit),
+                "n_validation_cycles": len(validation_rows),
+                "validation_fraction_by_patient": validation_fraction,
+                "official_partitions_used_for_training": ["train"],
+                "patient_independent": True,
+            },
+            "data_provenance": provenance,
+            "preprocessing": config.get("processing", {}),
+            "features_config": config.get("features", {}),
+            "results": results,
+            "versions": get_environment_versions(),
         },
-        "data_provenance": dataset_provenance(config),
-        "preprocessing": config.get("processing", {}),
-        "features_config": config.get("features", {}),
-        "results": results,
-        "versions": get_environment_versions(),
-    })
+    )
 
     print(f"Model saved to {model_output}")
     print(f"Metadata saved to {metadata_output}")

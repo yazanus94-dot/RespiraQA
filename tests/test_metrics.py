@@ -69,9 +69,7 @@ def test_macro_f1_includes_absent_classes():
     true = ["normal", "both", "normal"]
     pred = ["normal", "both", "both"]
     metrics = compute_metrics(true, pred)
-    expected = sum(v["f1_score"] for v in metrics["per_class"].values()) / len(
-        metrics["per_class"]
-    )
+    expected = sum(v["f1_score"] for v in metrics["per_class"].values()) / len(metrics["per_class"])
     assert metrics["macro_f1"] == pytest.approx(expected)
     accuracy, robustness_f1 = accuracy_macro_f1(true, pred)
     assert robustness_f1 == pytest.approx(metrics["macro_f1"])

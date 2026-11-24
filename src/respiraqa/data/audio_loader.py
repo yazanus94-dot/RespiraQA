@@ -109,6 +109,4 @@ def _resample(audio: np.ndarray, source_rate: int, target_rate: int) -> np.ndarr
     array = np.asarray(audio, dtype=np.float64)
     if array.ndim not in (1, 2):
         raise ValueError("Resampling expects a 1-D or 2-D (samples, channels) signal")
-    return librosa.resample(
-        array, orig_sr=source_rate, target_sr=target_rate, axis=0
-    )
+    return librosa.resample(array, orig_sr=source_rate, target_sr=target_rate, axis=0)

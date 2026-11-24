@@ -1,4 +1,12 @@
 dataset:
+  # Explicit provenance - never inferred from directory names.
+  provenance: real
+  dataset_id: icbhi_2017_respiratory_sound_database
+  source: physionet_icbhi2017
+  version: "2017"
+  license: "PhysioNet ICBHI 2017 usage terms; record download date/release in docs/dataset_documentation.md"
+  # Set to true ONLY after the dataset owner personally accepts the terms.
+  terms_accepted_by_owner: false
   # Paths to the locally downloaded ICBHI 2017 Respiratory Sound Database.
   # Adjust these to match the layout of the release you download.
   root: "data/raw/ICBHI2017"

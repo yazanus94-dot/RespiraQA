@@ -32,8 +32,8 @@ def validate_dataset(config: dict[str, Any], config_path: str) -> dict[str, Any]
         else audio_dir
     )
 
-    paired_audio, paired_annotations, unpaired_audio, unpaired_annotations = (
-        discover_dataset_files(audio_dir, annotation_dir)
+    paired_audio, paired_annotations, unpaired_audio, unpaired_annotations = discover_dataset_files(
+        audio_dir, annotation_dir
     )
 
     errors: list[dict[str, str]] = []
@@ -46,7 +46,10 @@ def validate_dataset(config: dict[str, Any], config_path: str) -> dict[str, Any]
         )
     for annotation in unpaired_annotations:
         warnings.append(
-            {"code": "annotations_without_audio", "message": f"{annotation.name}: no matching audio"}
+            {
+                "code": "annotations_without_audio",
+                "message": f"{annotation.name}: no matching audio",
+            }
         )
 
     for wav, annotation in zip(paired_audio, paired_annotations, strict=True):
@@ -76,9 +79,7 @@ def validate_dataset(config: dict[str, Any], config_path: str) -> dict[str, Any]
         issues = validate_annotation_dataframe(annotations, info["duration_seconds"])
         for issue in issues:
             target = errors if issue["severity"] == "error" else warnings
-            target.append(
-                {"code": issue["code"], "message": f"{wav.name}: {issue['message']}"}
-            )
+            target.append({"code": issue["code"], "message": f"{wav.name}: {issue['message']}"})
 
         record["annotation_rows"] = int(len(annotations))
         recordings.append(record)
@@ -129,9 +130,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         lines.append("")
     lines.append("## Recordings")
     lines.append("")
-    lines.append(
-        "| recording | sample rate | channels | duration (s) | annotation rows |"
-    )
+    lines.append("| recording | sample rate | channels | duration (s) | annotation rows |")
     lines.append("|---|---|---|---|---|")
     for record in report["recordings"]:
         lines.append(

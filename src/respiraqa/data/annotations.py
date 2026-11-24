@@ -83,9 +83,7 @@ def read_annotation_file(path: str | Path) -> pd.DataFrame:
                 ("end_time", end_time),
             ):
                 if value != value or value in (float("inf"), float("-inf")):
-                    raise AnnotationError(
-                        f"{file_path.name}:{line_number}: {name} is not finite"
-                    )
+                    raise AnnotationError(f"{file_path.name}:{line_number}: {name} is not finite")
             if start_time < 0:
                 raise AnnotationError(
                     f"{file_path.name}:{line_number}: negative start_time ({start_time})"

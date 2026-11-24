@@ -62,7 +62,6 @@ def extract_cycle(
         raise ValueError("Extracted cycle is empty")
     if cycle.size < min_cycle_samples:
         raise ValueError(
-            f"Extracted cycle is too short ({cycle.size} samples; "
-            f"minimum {min_cycle_samples})"
+            f"Extracted cycle is too short ({cycle.size} samples; minimum {min_cycle_samples})"
         )
     return cycle

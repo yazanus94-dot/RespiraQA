@@ -1,6 +1,12 @@
 # Configuration for the committed synthetic demo dataset (no real patient data).
 # Use this to exercise the full pipeline end-to-end without downloading ICBHI 2017.
 dataset:
+  # Explicit provenance - never inferred from directory names.
+  provenance: synthetic
+  dataset_id: synthetic_respiraqa_fixture
+  source: committed_test_fixture
+  version: "1.0"
+  license: "MIT (project test fixtures)"
   root: "tests/fixtures/synthetic"
   audio_dir: "tests/fixtures/synthetic/audio"
   annotation_dir: "tests/fixtures/synthetic/annotations"

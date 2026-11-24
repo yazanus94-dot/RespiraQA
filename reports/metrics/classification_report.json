@@ -60,6 +60,11 @@
   },
   "data_provenance": {
     "dataset_root": "tests\\fixtures\\synthetic",
+    "provenance": "synthetic",
+    "dataset_id": "synthetic_respiraqa_fixture",
+    "source": "committed_test_fixture",
+    "version": "1.0",
+    "license": "MIT (project test fixtures)",
     "synthetic": true,
     "label": "SYNTHETIC DEMO - not clinical validation"
   }

@@ -45,13 +45,17 @@ def main(argv: list[str] | None = None) -> int:
     output = pd.DataFrame(features)
     output.to_csv(features_path, index=False)
 
-    feature_columns = [c for c in output.columns if c not in
-                       {"recording_id", "patient_id", "cycle_id", "class_label",
-                        "official_partition"}]
+    feature_columns = [
+        c
+        for c in output.columns
+        if c not in {"recording_id", "patient_id", "cycle_id", "class_label", "official_partition"}
+    ]
     numeric = output[feature_columns].to_numpy(dtype=float)
     non_finite = int((~np.isfinite(numeric)).sum())
 
-    print(f"Features written to {features_path} ({len(output)} rows x {len(feature_columns)} features)")
+    print(
+        f"Features written to {features_path} ({len(output)} rows x {len(feature_columns)} features)"
+    )
     print(f"Class distribution: {output['class_label'].value_counts().to_dict()}")
     print(f"Non-finite feature values: {non_finite}")
     for issue in issues:

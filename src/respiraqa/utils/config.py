@@ -56,26 +56,117 @@ def resolve_path(config_path: str | Path, value: str | Path) -> Path:
     return repo_root(config_path) / candidate
 
 
-def dataset_provenance(config: dict[str, Any]) -> dict[str, Any]:
-    """Return explicit synthetic/real provenance for the configured dataset.
+VALID_PROVENANCE = ("synthetic", "real")
 
-    Results generated from the committed fixtures must never be mistaken for
-    real-data or clinical validation, so every report records this field.
+
+def _provenance_path(value: str | Path, config_path: str | Path | None) -> Path:
+    if config_path is not None:
+        return resolve_path(config_path, value)
+    candidate = Path(value)
+    return candidate if candidate.is_absolute() else Path.cwd() / candidate
+
+
+def _nonempty_directory(path: Path, label: str) -> None:
+    if not path.is_dir() or not any(path.iterdir()):
+        raise ConfigError(f"{label} must be an existing non-empty directory: {path}")
+
+
+def _validate_official_split(split_file: Path) -> None:
+    """Require an official patient partition with disjoint train/test sets."""
+    from respiraqa.data.dataset import DatasetError, read_split_file
+
+    try:
+        mapping = read_split_file(split_file)
+    except (FileNotFoundError, DatasetError) as exc:
+        raise ConfigError(f"invalid official patient split file: {exc}") from exc
+    partitions = set(mapping.values())
+    if "train" not in partitions or "test" not in partitions:
+        raise ConfigError("official patient split must contain both 'train' and 'test' partitions")
+    patients = list(mapping)
+    if len(set(patients)) != len(patients):
+        raise ConfigError("patient assigned to multiple partitions")
+
+
+def dataset_provenance(
+    config: dict[str, Any],
+    config_path: str | Path | None = None,
+    *,
+    require_real_evidence: bool = False,
+) -> dict[str, Any]:
+    """Return validated, explicit dataset provenance.
+
+    Provenance is NEVER inferred from a directory name. The configuration must
+    declare ``dataset.provenance`` plus a dataset id, source, version and
+    licence. For real research data, evidence of acquisition and an official
+    patient-independent split are required before real-data results may be
+    generated. Neither mode constitutes clinical validation.
     """
-    root_value = str(config.get("dataset", {}).get("root", ""))
+    dataset = config.get("dataset") or {}
+    provenance = str(dataset.get("provenance", "")).strip().lower()
+    if provenance not in VALID_PROVENANCE:
+        raise ConfigError(
+            f"dataset.provenance must be one of {', '.join(VALID_PROVENANCE)}; got {provenance!r}"
+        )
+    for key in ("dataset_id", "source", "version", "license"):
+        value = dataset.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise ConfigError(f"dataset.{key} must be a non-empty string")
+
+    root_value = str(dataset.get("root", ""))
+    root_path = _provenance_path(root_value, config_path)
     try:
         project_root = Path(__file__).resolve().parents[3]
-        root = str(Path(root_value).resolve().relative_to(project_root))
+        root_display = str(root_path.resolve().relative_to(project_root))
     except (ValueError, OSError):
-        root = root_value
-    synthetic = "synthetic" in root.casefold()
-    return {
-        "dataset_root": root,
+        root_display = root_value
+
+    synthetic = provenance == "synthetic"
+    result: dict[str, Any] = {
+        "dataset_root": root_display,
+        "provenance": provenance,
+        "dataset_id": dataset["dataset_id"],
+        "source": dataset["source"],
+        "version": dataset["version"],
+        "license": dataset["license"],
         "synthetic": synthetic,
         "label": (
-            "SYNTHETIC DEMO - not clinical validation" if synthetic else "REAL DATA - verify licence and cohort before use"
+            "SYNTHETIC DEMO - not clinical validation"
+            if synthetic
+            else "REAL RESEARCH DATA - not clinical validation"
         ),
     }
+
+    audio_dir = _provenance_path(str(dataset.get("audio_dir", "")), config_path)
+    annotation_dir = _provenance_path(str(dataset.get("annotation_dir", "")), config_path)
+    split_file = _provenance_path(str(dataset.get("split_file", "")), config_path)
+    if synthetic:
+        _nonempty_directory(audio_dir, "synthetic audio_dir")
+        _nonempty_directory(annotation_dir, "synthetic annotation_dir")
+        if not split_file.is_file():
+            raise ConfigError(f"synthetic split_file not found: {split_file}")
+    elif require_real_evidence:
+        _nonempty_directory(root_path, "real dataset root")
+        _nonempty_directory(audio_dir, "real audio_dir")
+        _nonempty_directory(annotation_dir, "real annotation_dir")
+        manifest = _provenance_path(str(dataset.get("manifest_path", "")), config_path)
+        if not manifest.is_file() or manifest.stat().st_size == 0:
+            raise ConfigError(
+                f"real-data results require a generated manifest at {manifest}; "
+                "run scripts/02_build_manifest.py first"
+            )
+        if not str(dataset.get("split_file", "")).strip():
+            raise ConfigError(
+                "real-data results require dataset.split_file (official patient partition)"
+            )
+        _validate_official_split(split_file)
+        if dataset.get("terms_accepted_by_owner") is not True:
+            raise ConfigError(
+                "real-data results require the dataset owner to accept the applicable "
+                "terms and set dataset.terms_accepted_by_owner: true in the config; "
+                "this tool never accepts terms on your behalf"
+            )
+        result["terms_accepted_by_owner"] = True
+    return result
 
 
 def resolve_config_paths(config: dict[str, Any], config_path: str | Path) -> dict[str, Any]:
